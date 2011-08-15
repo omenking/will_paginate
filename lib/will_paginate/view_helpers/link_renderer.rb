@@ -8,7 +8,7 @@ module WillPaginate
     # This class does the heavy lifting of actually building the pagination
     # links. It is used by +will_paginate+ helper internally.
     class LinkRenderer < LinkRendererBase
-      
+
       # * +collection+ is a WillPaginate::Collection instance or any other object
       #   that conforms to that API
       # * +options+ are forwarded from +will_paginate+ view helper
@@ -28,7 +28,7 @@ module WillPaginate
             page_number(item) :
             send(item)
         end.join(@options[:link_separator])
-        
+
         @options[:container] ? html_container(html) : html
       end
 
@@ -37,32 +37,30 @@ module WillPaginate
       def container_attributes
         @container_attributes ||= @options.except(*(ViewHelpers.pagination_options.keys - [:class]))
       end
-      
+
     protected
-    
+
       def page_number(page)
-        unless page == current_page
-          link(page, page, :rel => rel_value(page))
-        else
-          tag(:em, page, :class => 'current')
-        end
+        class_name = ''
+        class_name = 'active' if current_page == page
+        link page, page, :page_id => "#{page}", :class => class_name
       end
-      
+
       def gap
         text = @template.will_paginate_translate(:page_gap) { '&hellip;' }
         %(<span class="gap">#{text}</span>)
       end
-      
+
       def previous_page
         num = @collection.current_page > 1 && @collection.current_page - 1
         previous_or_next_page(num, @options[:previous_label], 'previous_page')
       end
-      
+
       def next_page
         num = @collection.current_page < @collection.total_pages && @collection.current_page + 1
         previous_or_next_page(num, @options[:next_label], 'next_page')
       end
-      
+
       def previous_or_next_page(page, text, classname)
         if page
           link(text, page, :class => classname)
@@ -70,17 +68,17 @@ module WillPaginate
           tag(:span, text, :class => classname + ' disabled')
         end
       end
-      
+
       def html_container(html)
         tag(:div, html, container_attributes)
       end
-      
+
       # Returns URL params for +page_link_or_span+, taking the current GET params
       # and <tt>:params</tt> option into account.
       def url(page)
         raise NotImplementedError
       end
-      
+
     private
 
       def param_name
@@ -95,7 +93,7 @@ module WillPaginate
         attributes[:href] = target
         tag(:a, text, attributes)
       end
-      
+
       def tag(name, value, attributes = {})
         string_attributes = attributes.inject('') do |attrs, pair|
           unless pair.last.nil?
@@ -118,7 +116,7 @@ module WillPaginate
         other.each do |key, value|
           key = key.to_sym
           existing = target[key]
-          
+
           if value.is_a?(Hash) and (existing.is_a?(Hash) or existing.nil?)
             symbolized_update(existing || (target[key] = {}), value)
           else
