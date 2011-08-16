@@ -42,7 +42,7 @@ module WillPaginate
 
       def page_number(page)
         class_name = []
-        class_name = 'page_number'
+        class_name << 'page_number'
         class_name << 'active' if current_page == page
         link page, page, :page_id => "#{page}", :class => class_name.join(' ')
       end
